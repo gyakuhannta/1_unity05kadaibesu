@@ -7,19 +7,30 @@ public class Player : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpSpeed;
+    [SerializeField] int jumpcnt=2;
 
     public float MaxLife => 100f;
     public ReactiveProperty<float> life { get; private set; } = new();
 
     PlayerInput playerInput;
     Rigidbody2D rb;
-
+    private int jumpct;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
         life.Value = MaxLife;
+        jumpct = 0;
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (gameObject.tag == "Floor") 
+        {
+            jumpct = 0;
+
+
+        }
     }
 
     // Update is called once per frame
@@ -44,10 +55,15 @@ public class Player : MonoBehaviour
             transform.localScale = localScale;
         }
 
-        // ジャンプ
-        if (playerInput.actions["Jump"].WasPressedThisFrame())
+        if (jumpcnt > jumpct)
         {
-            rb.linearVelocityY = jumpSpeed;
+            // ジャンプ
+            if (playerInput.actions["Jump"].WasPressedThisFrame())
+            {
+                rb.linearVelocityY = jumpSpeed;
+                jumpct++;
+
+            }
         }
     }
 }
